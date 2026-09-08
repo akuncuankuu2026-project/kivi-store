@@ -306,65 +306,6 @@ footer{
  .coupon-row{flex-direction:column}
 }
 
-
-/* ===== KIVI STORE UPGRADE #5 ===== */
-.checkout-box{
- margin-top:20px;
- padding:18px;
- border:1px solid #dcece6;
- border-radius:20px;
- background:#f8fcfa
-}
-.checkout-box h3{margin-top:0}
-.checkout-box label{
- display:block;
- margin:12px 0 6px;
- font-size:13px;
- font-weight:800
-}
-.checkout-box input,.checkout-box textarea{
- width:100%;
- padding:13px;
- border:1px solid #dcece6;
- border-radius:12px;
- background:white;
- font:inherit
-}
-.checkout-box textarea{
- min-height:85px;
- resize:vertical
-}
-.order-status{
- margin-top:18px;
- padding:16px;
- border-radius:16px;
- background:#eaf8f2;
- border:1px solid #cfeee1
-}
-.order-id{
- font-family:monospace;
- font-weight:900;
- letter-spacing:.5px
-}
-.history-item{
- padding:14px 0;
- border-bottom:1px solid #edf2f0
-}
-.small-muted{
- color:#71827c;
- font-size:13px
-}
-.badge-status{
- display:inline-block;
- margin-top:5px;
- padding:5px 9px;
- border-radius:20px;
- background:#dff5ec;
- color:#326c5a;
- font-size:12px;
- font-weight:800
-}
-
 </style>
 <style>
 
@@ -859,127 +800,15 @@ function renderCart(){
 
 }
 
-
-function cleanText(v){
- return String(v || "").trim();
-}
-
-function saveCustomer(){
- localStorage.setItem("kivi_customer", JSON.stringify({
-  name: cleanText(document.getElementById("customerName")?.value),
-  phone: cleanText(document.getElementById("customerPhone")?.value),
-  address: cleanText(document.getElementById("customerAddress")?.value),
-  note: cleanText(document.getElementById("customerNote")?.value)
- }));
-}
-
-function loadCustomer(){
- try{
-  const c=JSON.parse(localStorage.getItem("kivi_customer")||"{}");
-
-  if(document.getElementById("customerName"))
-   document.getElementById("customerName").value=c.name||"";
-
-  if(document.getElementById("customerPhone"))
-   document.getElementById("customerPhone").value=c.phone||"";
-
-  if(document.getElementById("customerAddress"))
-   document.getElementById("customerAddress").value=c.address||"";
-
-  if(document.getElementById("customerNote"))
-   document.getElementById("customerNote").value=c.note||"";
- }catch(e){}
-}
-
-function createOrderId(){
- const d=new Date();
- const stamp=
-  d.getFullYear().toString()+
-  String(d.getMonth()+1).padStart(2,"0")+
-  String(d.getDate()).padStart(2,"0");
-
- const rand=Math.random().toString(36).slice(2,7).toUpperCase();
-
- return "KIVI-"+stamp+"-"+rand;
-}
-
-function saveOrder(order){
- let history=[];
-
- try{
-  history=JSON.parse(localStorage.getItem("kivi_orders")||"[]");
-  if(!Array.isArray(history)) history=[];
- }catch(e){}
-
- history.unshift(order);
-
- localStorage.setItem(
-  "kivi_orders",
-  JSON.stringify(history.slice(0,30))
- );
-}
-
-function showLatestOrder(){
- const box=document.getElementById("orderStatus");
- if(!box)return;
-
- try{
-  const history=JSON.parse(
-   localStorage.getItem("kivi_orders")||"[]"
-  );
-
-  if(!history.length){
-   box.innerHTML="";
-   return;
-  }
-
-  const o=history[0];
-
-  box.innerHTML=`
-   <div class="order-status">
-    <b>📋 Pesanan terakhir</b><br>
-    <span class="order-id">${o.id}</span><br>
-    <span class="small-muted">${o.name}</span><br>
-    <span class="badge-status">${o.status}</span>
-   </div>
-  `;
- }catch(e){}
-}
-
-function validateCustomer(){
- const name=cleanText(document.getElementById("customerName")?.value);
- const phone=cleanText(document.getElementById("customerPhone")?.value);
- const address=cleanText(document.getElementById("customerAddress")?.value);
-
- if(name.length<2){
-  alert("Nama pemesan wajib diisi.");
-  return false;
- }
-
- const digits=phone.replace(/\D/g,"");
-
- if(digits.length<9 || digits.length>15){
-  alert("Nomor WhatsApp tidak valid.");
-  return false;
- }
-
- if(address.length<8){
-  alert("Alamat pengiriman wajib diisi.");
-  return false;
- }
-
- saveCustomer();
- return true;
-}
-
 function checkout(){
 
  if(!cart.length){
-  alert("Keranjang masih kosong.");
-  return;
- }
 
- if(!validateCustomer()) return;
+  alert("Keranjang masih kosong.");
+
+  return;
+
+ }
 
  if(WA_NUMBER.includes("XXXXXXXX")){
 
@@ -1011,49 +840,10 @@ function checkout(){
 
  });
 
- const customerName=
-  cleanText(document.getElementById("customerName").value);
-
- const customerPhone=
-  cleanText(document.getElementById("customerPhone").value);
-
- const customerAddress=
-  cleanText(document.getElementById("customerAddress").value);
-
- const customerNote=
-  cleanText(document.getElementById("customerNote").value);
-
- const orderId=createOrderId();
-
  message+=
   "%0A*TOTAL: "+money(total)+"*"+
   "%0A%0A"+
-  "*ORDER ID:* "+orderId+
-  "%0A*Nama:* "+encodeURIComponent(customerName)+
-  "%0A*WhatsApp:* "+encodeURIComponent(customerPhone)+
-  "%0A*Alamat:* "+encodeURIComponent(customerAddress);
-
- if(customerNote){
-  message+=
-   "%0A*Catatan:* "+
-   encodeURIComponent(customerNote);
- }
-
- message+=
-  "%0A%0AMohon konfirmasi pesanan saya.";
-
- saveOrder({
-  id:orderId,
-  name:customerName,
-  phone:customerPhone,
-  address:customerAddress,
-  note:customerNote,
-  total:total,
-  status:"Menunggu konfirmasi",
-  createdAt:new Date().toISOString()
- });
-
- showLatestOrder();
+  "Mohon konfirmasi pesanan saya.";
 
  const url=
   "https://wa.me/"+
@@ -1075,8 +865,6 @@ function goProducts(){
 
 update();
 render();
-loadCustomer();
-showLatestOrder();
 
 
 /* ===== KIVI UPGRADE #4 LOGIC ===== */
