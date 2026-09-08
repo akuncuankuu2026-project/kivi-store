@@ -365,97 +365,6 @@ footer{
  font-weight:800
 }
 
-
-/* ===== KIVI STORE UPGRADE #6 ===== */
-
-.upgrade6-tools{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
- margin-top:12px
-}
-
-.upgrade6-history{
- margin-top:18px;
- padding:18px;
- border-radius:20px;
- background:#f8fcfa;
- border:1px solid #dcece6
-}
-
-.upgrade6-history h3{
- margin-top:0
-}
-
-.history-row{
- padding:14px 0;
- border-bottom:1px solid #e8f0ed
-}
-
-.history-row:last-child{
- border-bottom:0
-}
-
-.history-order{
- font-family:monospace;
- font-weight:900
-}
-
-.history-price{
- font-weight:900;
- margin-top:4px
-}
-
-.coupon-box{
- margin-top:15px;
- padding:15px;
- border-radius:16px;
- background:#f1faf6;
- border:1px solid #d8eee4
-}
-
-.coupon-row{
- display:flex;
- gap:8px;
- margin-top:8px
-}
-
-.coupon-row input{
- flex:1
-}
-
-.coupon-result{
- margin-top:8px;
- font-size:13px;
- font-weight:800
-}
-
-.discount-line{
- display:flex;
- justify-content:space-between;
- color:#3c9278;
- font-weight:800;
- padding:5px 0
-}
-
-.grand-total{
- display:flex;
- justify-content:space-between;
- font-size:22px;
- font-weight:950;
- padding:10px 0 4px
-}
-
-@media(max-width:520px){
- .upgrade6-tools{
-  grid-template-columns:1fr
- }
-
- .coupon-row{
-  flex-direction:column
- }
-}
-
 </style>
 <style>
 
@@ -584,7 +493,6 @@ body.kivi-dark-mode main>p{
  <div class="logo">KIVI <span>STORE</span></div>
  <button onclick="goProducts()">Produk</button>
  <button class="soft" onclick="openCart()">🛒 <b id="count">0</b></button>
- <button class="soft" onclick="openHistory()">📋</button>
 </nav>
 </header>
 
@@ -666,20 +574,6 @@ body.kivi-dark-mode main>p{
  🛒 Keranjang: <b id="floating">0</b>
 </div>
 
-
-<div id="historyPanel" class="panel" onclick="closeHistoryOutside(event)">
- <div class="sheet">
-
-  <div style="display:flex;justify-content:space-between;align-items:center">
-   <h2>📋 Riwayat Pesanan</h2>
-   <button class="soft" onclick="closeHistory()">✕</button>
-  </div>
-
-  <div id="historyList"></div>
-
- </div>
-</div>
-
 <div id="cartPanel" class="panel" onclick="closeOutside(event)">
  <div class="sheet">
 
@@ -694,28 +588,6 @@ body.kivi-dark-mode main>p{
    <span>Total</span>
    <span id="total">Rp0</span>
   </div>
-  
-  <div class="coupon-box">
-   <b>🎟️ Kode Kupon</b>
-
-   <div class="coupon-row">
-    <input
-     id="couponInput"
-     maxlength="20"
-     placeholder="Masukkan kode kupon"
-    >
-
-    <button class="soft" onclick="applyCoupon()">
-     Gunakan
-    </button>
-   </div>
-
-   <div id="couponResult" class="coupon-result"></div>
-  </div>
-
-  <div id="discountLine"></div>
-
-  <div id="grandTotalLine"></div>
 
   <div class="order-box">
    <h3>📦 Data Pesanan</h3>
@@ -1100,297 +972,6 @@ function validateCustomer(){
  return true;
 }
 
-
-/* ===== KIVI STORE UPGRADE #6 JS ===== */
-
-let activeCoupon = "";
-
-function getDiscountRate(){
- if(activeCoupon === "KIVI10") return 0.10;
- return 0;
-}
-
-function getCartSubtotal(){
- return cart.reduce(
-  (sum,item)=>sum+(item.price*item.qty),
-  0
- );
-}
-
-function getCartDiscount(){
- return Math.round(
-  getCartSubtotal()*getDiscountRate()
- );
-}
-
-function getCartGrandTotal(){
- return getCartSubtotal()-getCartDiscount();
-}
-
-function applyCoupon(){
-
- const input=document.getElementById("couponInput");
- const result=document.getElementById("couponResult");
-
- if(!input || !result)return;
-
- const code=cleanText(input.value).toUpperCase();
-
- if(!code){
-  activeCoupon="";
-  result.textContent="Masukkan kode kupon.";
-  renderCart();
-  return;
- }
-
- if(code==="KIVI10"){
-
-  activeCoupon="KIVI10";
-
-  result.textContent="✅ Kupon KIVI10 aktif — diskon 10%.";
-
- }else{
-
-  activeCoupon="";
-
-  result.textContent="❌ Kode kupon tidak valid.";
-
- }
-
- renderCart();
-}
-
-function clearCart(){
-
- if(!cart.length){
-  alert("Keranjang sudah kosong.");
-  return;
- }
-
- if(!confirm("Kosongkan semua isi keranjang?"))return;
-
- cart=[];
- activeCoupon="";
-
- save();
- renderCart();
-
-}
-
-function openHistory(){
-
- const panel=document.getElementById("historyPanel");
-
- if(!panel)return;
-
- panel.classList.add("show");
-
- renderHistory();
-
-}
-
-function closeHistory(){
-
- const panel=document.getElementById("historyPanel");
-
- if(panel){
-  panel.classList.remove("show");
- }
-
-}
-
-function closeHistoryOutside(e){
-
- if(e.target.id==="historyPanel"){
-  closeHistory();
- }
-
-}
-
-function copyOrderId(id){
-
- if(!id)return;
-
- if(navigator.clipboard){
-
-  navigator.clipboard.writeText(id)
-   .then(()=>alert("Order ID berhasil disalin."))
-   .catch(()=>alert("Order ID: "+id));
-
- }else{
-
-  alert("Order ID: "+id);
-
- }
-
-}
-
-function renderHistory(){
-
- const box=document.getElementById("historyList");
-
- if(!box)return;
-
- let history=[];
-
- try{
-
-  history=JSON.parse(
-   localStorage.getItem("kivi_orders")||"[]"
-  );
-
-  if(!Array.isArray(history))history=[];
-
- }catch(e){
-
-  history=[];
-
- }
-
- if(!history.length){
-
-  box.innerHTML=
-   '<div class="empty">📭 Belum ada riwayat pesanan.</div>';
-
-  return;
-
- }
-
- box.innerHTML=history.slice(0,30).map(o=>{
-
-  const date=o.createdAt
-   ? new Date(o.createdAt).toLocaleString("id-ID")
-   : "-";
-
-  return `
-   <div class="history-row">
-
-    <div>
-     <span class="history-order">${o.id||"-"}</span>
-     <button
-      class="soft"
-      style="padding:5px 8px;margin-left:5px"
-      onclick="copyOrderId('${String(o.id||"").replace(/'/g,"")}')">
-      Salin
-     </button>
-    </div>
-
-    <div class="history-price">
-     ${money(Number(o.total||0))}
-    </div>
-
-    <div class="small-muted">
-     ${o.name||"-"} · ${date}
-    </div>
-
-    <span class="badge-status">
-     ${o.status||"Menunggu konfirmasi"}
-    </span>
-
-   </div>
-  `;
-
- }).join("");
-
-}
-
-function renderCart(){
-
- const box=document.getElementById("cartItems");
-
- if(!cart.length){
-
-  box.innerHTML=
-   '<div class="empty">🛒 Keranjang masih kosong.</div>';
-
-  document.getElementById("total").textContent="Rp0";
-
-  const d=document.getElementById("discountLine");
-  const g=document.getElementById("grandTotalLine");
-
-  if(d)d.innerHTML="";
-  if(g)g.innerHTML="";
-
-  return;
-
- }
-
- let subtotal=getCartSubtotal();
- let discount=getCartDiscount();
- let grandTotal=getCartGrandTotal();
-
- box.innerHTML=cart.map(x=>{
-
-  return `
-   <div class="item">
-
-    <div class="item-info">
-     <b>${x.name}</b><br>
-     <small>${money(x.price)}</small>
-    </div>
-
-    <div class="qty">
-
-     <button class="soft"
-      onclick="changeQty(${x.id},-1)">−</button>
-
-     <b>${x.qty}</b>
-
-     <button class="soft"
-      onclick="changeQty(${x.id},1)">+</button>
-
-    </div>
-
-   </div>
-  `;
-
- }).join("");
-
- document.getElementById("total").textContent=
-  money(subtotal);
-
- const discountBox=document.getElementById("discountLine");
-
- if(discountBox){
-
-  discountBox.innerHTML=discount>0
-   ? `
-    <div class="discount-line">
-     <span>Diskon KIVI10</span>
-     <span>-${money(discount)}</span>
-    </div>
-   `
-   : "";
-
- }
-
- const grandBox=document.getElementById("grandTotalLine");
-
- if(grandBox){
-
-  grandBox.innerHTML=`
-   <div class="grand-total">
-    <span>Total Bayar</span>
-    <span>${money(grandTotal)}</span>
-   </div>
-  `;
-
- }
-
-}
-
-function upgrade6CheckoutData(){
-
- return {
-  subtotal:getCartSubtotal(),
-  discount:getCartDiscount(),
-  total:getCartGrandTotal(),
-  coupon:activeCoupon
- };
-
-}
-
-
 function checkout(){
 
  if(!cart.length){
@@ -1420,6 +1001,8 @@ function checkout(){
 
   const subtotal=x.price*x.qty;
 
+  total+=subtotal;
+
   message+=
    "• "+x.name+
    " x"+x.qty+
@@ -1441,14 +1024,6 @@ function checkout(){
   cleanText(document.getElementById("customerNote").value);
 
  const orderId=createOrderId();
-
- const discount=getCartDiscount();
-
- if(activeCoupon){
-  message+=
-   "%0A*KUpon:* "+activeCoupon+
-   "%0A*DISKON:* "+money(discount);
- }
 
  message+=
   "%0A*TOTAL: "+money(total)+"*"+
@@ -1473,9 +1048,6 @@ function checkout(){
   phone:customerPhone,
   address:customerAddress,
   note:customerNote,
-  subtotal:getCartSubtotal(),
-  discount:getCartDiscount(),
-  coupon:activeCoupon,
   total:total,
   status:"Menunggu konfirmasi",
   createdAt:new Date().toISOString()
