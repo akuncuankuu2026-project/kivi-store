@@ -3,94 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#24342f">
+<meta name="description" content="KIVI STORE — Aesthetic shopping experience">
 <title>KIVI STORE</title>
+
 <style>
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
- margin:0;font-family:system-ui,-apple-system,sans-serif;
+ margin:0;
+ font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
  color:#24342f;
  background:linear-gradient(135deg,#f8fffc,#edf8f4)
 }
 header{
- position:sticky;top:0;z-index:5;
- backdrop-filter:blur(16px);
- background:#ffffffdd;border-bottom:1px solid #dcece6
+ position:sticky;
+ top:0;
+ z-index:20;
+ backdrop-filter:blur(18px);
+ background:#ffffffdf;
+ border-bottom:1px solid #dcece6
 }
 nav{
- max-width:1150px;margin:auto;height:70px;
- display:flex;align-items:center;padding:0 20px;gap:15px
+ max-width:1150px;
+ height:68px;
+ margin:auto;
+ padding:0 20px;
+ display:flex;
+ align-items:center;
+ gap:10px
 }
-.logo{font-size:25px;font-weight:900;margin-right:auto}
+.logo{
+ font-size:24px;
+ font-weight:950;
+ margin-right:auto
+}
 .logo span{color:#61bea1}
 button{
- border:0;border-radius:14px;padding:11px 16px;
- font-weight:800;cursor:pointer
+ border:0;
+ border-radius:14px;
+ padding:11px 16px;
+ font-weight:800;
+ cursor:pointer;
+ transition:.2s
 }
+button:active{transform:scale(.96)}
 .dark{background:#24342f;color:white}
 .soft{background:#dff5ec;color:#326c5a}
 .hero{
- max-width:1150px;margin:auto;padding:70px 20px 45px;
- display:grid;grid-template-columns:1.1fr .9fr;gap:35px;
+ max-width:1150px;
+ margin:auto;
+ padding:65px 20px 45px;
+ display:grid;
+ grid-template-columns:1.1fr .9fr;
+ gap:35px;
  align-items:center
 }
 .badge{
- display:inline-block;background:#dcf6ec;color:#3c9278;
- padding:8px 13px;border-radius:50px;font-weight:800
+ display:inline-block;
+ background:#dcf6ec;
+ color:#3c9278;
+ padding:8px 13px;
+ border-radius:50px;
+ font-weight:800
 }
 h1{
  font-size:clamp(45px,7vw,78px);
- line-height:.98;letter-spacing:-4px;margin:18px 0
+ line-height:.98;
+ letter-spacing:-4px;
+ margin:18px 0
 }
 h1 span{color:#68bea1}
-.hero p{font-size:18px;color:#71827c;line-height:1.7}
+.hero p{
+ font-size:18px;
+ color:#71827c;
+ line-height:1.7
+}
 .art{
- height:360px;border-radius:35px;
+ min-height:350px;
+ border-radius:35px;
  background:linear-gradient(135deg,#bdebdc,#effbf6);
- display:grid;place-items:center;
+ display:grid;
+ place-items:center;
  box-shadow:0 25px 70px #5a9b8425
 }
-.art div{
- width:180px;height:180px;border-radius:50%;
- background:#ffffffaa
+.art-icon{font-size:110px}
+main{
+ max-width:1150px;
+ margin:auto;
+ padding:20px
 }
-main{max-width:1150px;margin:auto;padding:20px}
-.toolbar{display:flex;gap:10px;margin-bottom:20px}
-input{
- flex:1;padding:14px;border:1px solid #dcece6;
- border-radius:14px;background:white;outline:none
+.toolbar{
+ display:flex;
+ gap:10px;
+ margin:20px 0
+}
+input,select{
+ width:100%;
+ padding:14px;
+ border:1px solid #dcece6;
+ border-radius:14px;
+ background:white;
+ outline:none;
+ font:inherit
 }
 .grid{
- display:grid;grid-template-columns:repeat(4,1fr);gap:18px
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:18px
 }
 .card{
- background:white;border:1px solid #dcece6;
- border-radius:23px;overflow:hidden;
- box-shadow:0 15px 40px #527f7012
+ background:white;
+ border:1px solid #dcece6;
+ border-radius:23px;
+ overflow:hidden;
+ box-shadow:0 15px 40px #527f7012;
+ transition:.2s
+}
+.card:hover{
+ transform:translateY(-4px);
+ box-shadow:0 20px 45px #527f7020
 }
 .pic{
- height:190px;display:grid;place-items:center;
- font-size:65px;background:linear-gradient(135deg,#e4f8f0,#f8fcfa)
+ height:190px;
+ display:grid;
+ place-items:center;
+ font-size:65px;
+ background:linear-gradient(135deg,#e4f8f0,#f8fcfa)
 }
 .body{padding:18px}
-.category{font-size:13px;color:#76a092}
-.price{font-size:20px;font-weight:900;margin:12px 0}
+.category{
+ font-size:13px;
+ color:#76a092;
+ font-weight:700
+}
+.price{
+ font-size:20px;
+ font-weight:900;
+ margin:12px 0
+}
+.card button{width:100%}
 .cart{
- position:fixed;right:20px;bottom:20px;
- background:#24342f;color:white;border-radius:50px;
- padding:15px 20px;box-shadow:0 15px 40px #0003
+ position:fixed;
+ right:20px;
+ bottom:20px;
+ z-index:30;
+ background:#24342f;
+ color:white;
+ border-radius:50px;
+ padding:15px 20px;
+ box-shadow:0 15px 40px #0003
+}
+.panel{
+ position:fixed;
+ inset:0;
+ background:#0006;
+ z-index:40;
+ display:none;
+ align-items:flex-end;
+ justify-content:center
+}
+.panel.show{display:flex}
+.sheet{
+ width:min(600px,100%);
+ max-height:90vh;
+ overflow:auto;
+ background:white;
+ border-radius:28px 28px 0 0;
+ padding:24px;
+ animation:up .2s ease
+}
+@keyframes up{
+ from{transform:translateY(100%)}
+ to{transform:translateY(0)}
+}
+.item{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid #edf2f0
+}
+.item-info{flex:1}
+.qty{
+ display:flex;
+ align-items:center;
+ gap:8px
+}
+.qty button{
+ padding:7px 11px;
+ border-radius:10px
+}
+.total{
+ display:flex;
+ justify-content:space-between;
+ font-size:20px;
+ font-weight:900;
+ padding:20px 0
 }
 .admin{
- margin-top:50px;padding:35px;
- border-radius:28px;background:#24342f;color:white
+ margin-top:55px;
+ padding:30px;
+ border-radius:28px;
+ background:#24342f;
+ color:white
 }
 .admingrid{
- display:grid;grid-template-columns:repeat(4,1fr);gap:12px
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px
 }
 .stat{
- background:#ffffff12;border:1px solid #ffffff20;
- padding:20px;border-radius:18px
+ background:#ffffff12;
+ border:1px solid #ffffff20;
+ padding:20px;
+ border-radius:18px
 }
-footer{text-align:center;padding:60px 20px;color:#71827c}
+.empty{
+ padding:40px;
+ text-align:center;
+ color:#71827c;
+ background:white;
+ border-radius:20px
+}
+footer{
+ text-align:center;
+ padding:60px 20px;
+ color:#71827c
+}
 @media(max-width:800px){
  .hero{grid-template-columns:1fr}
  .grid{grid-template-columns:repeat(2,1fr)}
@@ -98,106 +238,424 @@ footer{text-align:center;padding:60px 20px;color:#71827c}
 }
 @media(max-width:520px){
  .grid{grid-template-columns:1fr}
- .nav button:not(.dark){display:none}
+ nav button:not(.dark){display:none}
+ .art{min-height:250px}
 }
 </style>
 </head>
+
 <body>
 
 <header>
 <nav>
  <div class="logo">KIVI <span>STORE</span></div>
- <button onclick="document.getElementById('products').scrollIntoView()">Produk</button>
- <button class="soft" onclick="alert('Admin panel siap dikembangkan')">Admin</button>
- <button class="dark" onclick="showCart()">🛒 <b id="count">0</b></button>
+ <button onclick="goProducts()">Produk</button>
+ <button class="soft" onclick="openCart()">🛒 <b id="count">0</b></button>
 </nav>
 </header>
 
 <section class="hero">
+
 <div>
  <span class="badge">✦ KIVI STORE</span>
- <h1>Belanja jadi lebih <span>aesthetic.</span></h1>
+
+ <h1>
+ Belanja jadi lebih
+ <span>aesthetic.</span>
+ </h1>
+
  <p>
- Temukan produk pilihan KIVI STORE dengan pengalaman belanja
- modern, simpel, cepat, dan menyenangkan.
+ Temukan produk pilihan KIVI STORE dengan pengalaman
+ belanja modern, simpel, cepat, dan menyenangkan.
  </p>
- <button class="dark" onclick="document.getElementById('products').scrollIntoView()">
+
+ <button class="dark" onclick="goProducts()">
  Mulai Belanja
  </button>
 </div>
-<div class="art"><div></div></div>
+
+<div class="art">
+ <div class="art-icon">🥝</div>
+</div>
+
 </section>
 
 <main id="products">
+
 <h2>Produk Pilihan</h2>
-<p style="color:#71827c">Koleksi terbaru KIVI STORE</p>
+<p style="color:#71827c">
+ Koleksi terbaru KIVI STORE
+</p>
 
 <div class="toolbar">
-<input id="search" placeholder="🔎 Cari produk..." oninput="load()">
+ <input
+  id="search"
+  placeholder="🔎 Cari produk..."
+  oninput="render()"
+ >
+
+ <select id="category" onchange="render()">
+  <option value="">Semua</option>
+  <option>Featured</option>
+  <option>Lifestyle</option>
+  <option>Premium</option>
+  <option>Accessories</option>
+ </select>
 </div>
 
 <div id="grid" class="grid"></div>
 
 <section class="admin">
-<h2>⚡ KIVI STORE CONTROL CENTER</h2>
-<p>Fondasi dashboard admin untuk pengembangan berikutnya.</p>
-<div class="admingrid">
-<div class="stat">📦<br><b>Products</b></div>
-<div class="stat">🛒<br><b>Orders</b></div>
-<div class="stat">👥<br><b>Customers</b></div>
-<div class="stat">📊<br><b>Analytics</b></div>
-</div>
+ <h2>⚡ KIVI STORE CONTROL CENTER</h2>
+ <p>Fondasi dashboard KIVI STORE.</p>
+
+ <div class="admingrid">
+  <div class="stat">📦<br><b id="productStat">0 Products</b></div>
+  <div class="stat">🛒<br><b id="cartStat">0 Cart Items</b></div>
+  <div class="stat">💰<br><b id="valueStat">Rp0</b></div>
+  <div class="stat">🌐<br><b>Online Store</b></div>
+ </div>
 </section>
+
 </main>
 
 <footer>
-<b>KIVI STORE</b><br>
-Aesthetic shopping experience.
+ <b>KIVI STORE</b><br>
+ Aesthetic shopping experience.
 </footer>
 
-<div class="cart" onclick="showCart()">🛒 Keranjang: <b id="floating">0</b></div>
+<div class="cart" onclick="openCart()">
+ 🛒 Keranjang: <b id="floating">0</b>
+</div>
+
+<div id="cart" onclick="openCart()">
+ 🛒 Keranjang: <b id="floating">0</b>
+</div>
+
+<div id="cartPanel" class="panel" onclick="closeOutside(event)">
+ <div class="sheet">
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+   <h2>🛒 Keranjang</h2>
+   <button class="soft" onclick="closeCart()">✕</button>
+  </div>
+
+  <div id="cartItems"></div>
+
+  <div class="total">
+   <span>Total</span>
+   <span id="total">Rp0</span>
+  </div>
+
+  <button class="dark" style="width:100%" onclick="checkout()">
+   📱 Checkout via WhatsApp
+  </button>
+
+ </div>
+</div>
 
 <script>
-let cart=[];
+
+const WA_NUMBER="628XXXXXXXXXX";
+
+const products=[
+ {
+  id:1,
+  name:"Kivi Essential",
+  price:129000,
+  category:"Featured",
+  emoji:"👜"
+ },
+ {
+  id:2,
+  name:"Kivi Daily",
+  price:89000,
+  category:"Lifestyle",
+  emoji:"✨"
+ },
+ {
+  id:3,
+  name:"Kivi Premium",
+  price:249000,
+  category:"Premium",
+  emoji:"🎀"
+ },
+ {
+  id:4,
+  name:"Kivi Accessory",
+  price:59000,
+  category:"Accessories",
+  emoji:"💎"
+ }
+];
+
+let cart=JSON.parse(localStorage.getItem("kivi_cart")||"[]");
 
 const money=n=>new Intl.NumberFormat("id-ID",{
- style:"currency",currency:"IDR",maximumFractionDigits:0
+ style:"currency",
+ currency:"IDR",
+ maximumFractionDigits:0
 }).format(n);
 
-async function load(){
- const q=encodeURIComponent(document.getElementById("search").value);
- const products=await fetch("/api/products?q="+q).then(r=>r.json());
-
- document.getElementById("grid").innerHTML=products.map(p=>`
- <article class="card">
-  <div class="pic">${p.emoji}</div>
-  <div class="body">
-   <div class="category">${p.category}</div>
-   <h3>${p.name}</h3>
-   <div class="price">${money(p.price)}</div>
-   <button class="dark" onclick="add(${p.id},'${p.name}',${p.price})">
-    Tambah
-   </button>
-  </div>
- </article>`).join("");
-}
-
-function add(id,name,price){
- cart.push({id,name,price});
+function save(){
+ localStorage.setItem("kivi_cart",JSON.stringify(cart));
  update();
 }
 
 function update(){
- document.getElementById("count").textContent=cart.length;
- document.getElementById("floating").textContent=cart.length;
+
+ const count=cart.reduce((a,x)=>a+x.qty,0);
+
+ const value=cart.reduce(
+  (a,x)=>a+(x.price*x.qty),0
+ );
+
+ document.getElementById("count").textContent=count;
+ document.getElementById("floating").textContent=count;
+ document.getElementById("cartStat").textContent=count+" Cart Items";
+ document.getElementById("valueStat").textContent=money(value);
+
 }
 
-function showCart(){
- if(!cart.length)return alert("Keranjang masih kosong.");
- alert("Isi keranjang:\\n\\n"+cart.map(x=>x.name).join("\\n"));
+function render(){
+
+ const q=document.getElementById("search").value
+  .toLowerCase();
+
+ const cat=document.getElementById("category").value;
+
+ const list=products.filter(p=>
+  (!q ||
+   p.name.toLowerCase().includes(q) ||
+   p.category.toLowerCase().includes(q)
+  ) &&
+  (!cat || p.category===cat)
+ );
+
+ document.getElementById("productStat").textContent=
+  products.length+" Products";
+
+ if(!list.length){
+  document.getElementById("grid").innerHTML=
+   '<div class="empty">Produk tidak ditemukan.</div>';
+  return;
+ }
+
+ document.getElementById("grid").innerHTML=list.map(p=>`
+  <article class="card">
+
+   <div class="pic">${p.emoji}</div>
+
+   <div class="body">
+
+    <div class="category">${p.category}</div>
+
+    <h3>${p.name}</h3>
+
+    <div class="price">${money(p.price)}</div>
+
+    <button class="dark"
+     onclick="add(${p.id})">
+     Tambah ke Keranjang
+    </button>
+
+   </div>
+
+  </article>
+ `).join("");
+
 }
 
-load();
+function add(id){
+
+ const p=products.find(x=>x.id===id);
+
+ const existing=cart.find(x=>x.id===id);
+
+ if(existing){
+  existing.qty++;
+ }else{
+  cart.push({
+   id:p.id,
+   name:p.name,
+   price:p.price,
+   qty:1
+  });
+ }
+
+ save();
+
+}
+
+function remove(id){
+
+ cart=cart.filter(x=>x.id!==id);
+
+ save();
+ openCart();
+
+}
+
+function changeQty(id,delta){
+
+ const item=cart.find(x=>x.id===id);
+
+ if(!item)return;
+
+ item.qty+=delta;
+
+ if(item.qty<=0){
+  remove(id);
+  return;
+ }
+
+ save();
+ openCart();
+
+}
+
+function openCart(){
+
+ document.getElementById("cartPanel")
+  .classList.add("show");
+
+ renderCart();
+
+}
+
+function closeCart(){
+
+ document.getElementById("cartPanel")
+  .classList.remove("show");
+
+}
+
+function closeOutside(e){
+
+ if(e.target.id==="cartPanel"){
+  closeCart();
+ }
+
+}
+
+function renderCart(){
+
+ const box=document.getElementById("cartItems");
+
+ if(!cart.length){
+
+  box.innerHTML=
+   '<div class="empty">🛒 Keranjang masih kosong.</div>';
+
+  document.getElementById("total").textContent="Rp0";
+
+  return;
+
+ }
+
+ let total=0;
+
+ box.innerHTML=cart.map(x=>{
+
+  total+=x.price*x.qty;
+
+  return `
+   <div class="item">
+
+    <div class="item-info">
+     <b>${x.name}</b><br>
+     <small>${money(x.price)}</small>
+    </div>
+
+    <div class="qty">
+
+     <button class="soft"
+      onclick="changeQty(${x.id},-1)">−</button>
+
+     <b>${x.qty}</b>
+
+     <button class="soft"
+      onclick="changeQty(${x.id},1)">+</button>
+
+    </div>
+
+   </div>
+  `;
+
+ }).join("");
+
+ document.getElementById("total").textContent=
+  money(total);
+
+}
+
+function checkout(){
+
+ if(!cart.length){
+
+  alert("Keranjang masih kosong.");
+
+  return;
+
+ }
+
+ if(WA_NUMBER.includes("XXXXXXXX")){
+
+  alert(
+   "Nomor WhatsApp toko belum dikonfigurasi.\n\n"+
+   "Edit WA_NUMBER pada source KIVI STORE."
+  );
+
+  return;
+
+ }
+
+ let total=0;
+
+ let message=
+  "🥝 *PESANAN KIVI STORE*%0A%0A";
+
+ cart.forEach(x=>{
+
+  const subtotal=x.price*x.qty;
+
+  total+=subtotal;
+
+  message+=
+   "• "+x.name+
+   " x"+x.qty+
+   " = "+money(subtotal)+
+   "%0A";
+
+ });
+
+ message+=
+  "%0A*TOTAL: "+money(total)+"*"+
+  "%0A%0A"+
+  "Mohon konfirmasi pesanan saya.";
+
+ const url=
+  "https://wa.me/"+
+  WA_NUMBER+
+  "?text="+message;
+
+ window.open(url,"_blank");
+
+}
+
+function goProducts(){
+
+ document.getElementById("products")
+  .scrollIntoView({
+   behavior:"smooth"
+  });
+
+}
+
+update();
+render();
+
 </script>
+
 </body>
 </html>
