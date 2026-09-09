@@ -1478,10 +1478,14 @@ function goProducts(){
 
 }
 
-update();
-render();
-loadCustomer();
-showLatestOrder();
+
+document.addEventListener("DOMContentLoaded",()=>{
+ update();
+ render();
+ loadCustomer();
+ showLatestOrder();
+});
+
 
 
 </script>
