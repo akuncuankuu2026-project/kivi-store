@@ -936,56 +936,7 @@ function closeOutside(e){
 
 }
 
-function renderCart(){
 
- const box=document.getElementById("cartItems");
-
- if(!cart.length){
-
-  box.innerHTML=
-   '<div class="empty">🛒 Keranjang masih kosong.</div>';
-
-  document.getElementById("total").textContent="Rp0";
-
-  return;
-
- }
-
- let total=0;
-
- box.innerHTML=cart.map(x=>{
-
-  total+=x.price*x.qty;
-
-  return `
-   <div class="item">
-
-    <div class="item-info">
-     <b>${x.name}</b><br>
-     <small>${money(x.price)}</small>
-    </div>
-
-    <div class="qty">
-
-     <button class="soft"
-      onclick="changeQty(${x.id},-1)">−</button>
-
-     <b>${x.qty}</b>
-
-     <button class="soft"
-      onclick="changeQty(${x.id},1)">+</button>
-
-    </div>
-
-   </div>
-  `;
-
- }).join("");
-
- document.getElementById("total").textContent=
-  money(total);
-
-}
 
 
 function cleanText(v){
@@ -1129,16 +1080,27 @@ function getCartGrandTotal(){
 
 function applyCoupon(){
 
- const input=document.getElementById("couponInput");
- const result=document.getElementById("couponResult");
+ const input=
+  document.getElementById("couponInput") ||
+  document.getElementById("coupon");
 
- if(!input || !result)return;
+ const result=document.getElementById("couponResult");
+ const status=document.getElementById("couponStatus");
+
+ if(!input)return;
 
  const code=cleanText(input.value).toUpperCase();
 
  if(!code){
+
   activeCoupon="";
-  result.textContent="Masukkan kode kupon.";
+
+  if(result)
+   result.textContent="Masukkan kode kupon.";
+
+  if(status)
+   status.textContent="Masukkan kode kupon.";
+
   renderCart();
   return;
  }
@@ -1147,14 +1109,33 @@ function applyCoupon(){
 
   activeCoupon="KIVI10";
 
-  result.textContent="✅ Kupon KIVI10 aktif — diskon 10%.";
+  if(result)
+   result.textContent=
+    "✅ Kupon KIVI10 aktif — diskon 10%.";
+
+  if(status){
+
+   status.textContent=
+    "✅ Kupon KIVI10 aktif — diskon 10%";
+
+   status.style.color="#43836f";
+  }
 
  }else{
 
   activeCoupon="";
 
-  result.textContent="❌ Kode kupon tidak valid.";
+  if(result)
+   result.textContent=
+    "❌ Kode kupon tidak valid.";
 
+  if(status){
+
+   status.textContent=
+    "❌ Kode kupon tidak valid.";
+
+   status.style.color="#b05a5a";
+  }
  }
 
  renderCart();
@@ -1258,8 +1239,8 @@ function renderHistory(){
 
  box.innerHTML=history.slice(0,30).map(o=>{
 
-  const date=o.createdAt
-   ? new Date(o.createdAt).toLocaleString("id-ID")
+  const date=(o.createdAt||o.date)
+   ? new Date(o.createdAt||o.date).toLocaleString("id-ID")
    : "-";
 
   return `
@@ -1398,7 +1379,7 @@ function checkout(){
   return;
  }
 
- if(!validateCustomer()) return;
+ if(!validateCustomer())return;
 
  if(WA_NUMBER.includes("XXXXXXXX")){
 
@@ -1408,50 +1389,58 @@ function checkout(){
   );
 
   return;
-
  }
 
- let total=0;
+ const customerName=
+  cleanText(
+   document.getElementById("customerName")?.value || ""
+  );
+
+ const customerPhone=
+  cleanText(
+   document.getElementById("customerPhone")?.value || ""
+  );
+
+ const customerAddress=
+  cleanText(
+   document.getElementById("customerAddress")?.value || ""
+  );
+
+ const customerNote=
+  cleanText(
+   document.getElementById("customerNote")?.value || ""
+  );
+
+ const orderId=createOrderId();
+
+ const subtotal=getCartSubtotal();
+ const discount=getCartDiscount();
+ const total=getCartGrandTotal();
 
  let message=
   "🥝 *PESANAN KIVI STORE*%0A%0A";
 
  cart.forEach(x=>{
 
-  const subtotal=x.price*x.qty;
+  const lineTotal=x.price*x.qty;
 
   message+=
    "• "+x.name+
    " x"+x.qty+
-   " = "+money(subtotal)+
+   " = "+money(lineTotal)+
    "%0A";
-
  });
 
- const customerName=
-  cleanText(document.getElementById("customerName").value);
-
- const customerPhone=
-  cleanText(document.getElementById("customerPhone").value);
-
- const customerAddress=
-  cleanText(document.getElementById("customerAddress").value);
-
- const customerNote=
-  cleanText(document.getElementById("customerNote").value);
-
- const orderId=createOrderId();
-
- const discount=getCartDiscount();
-
  if(activeCoupon){
+
   message+=
-   "%0A*KUpon:* "+activeCoupon+
-   "%0A*DISKON:* "+money(discount);
+   "%0A*Kupon:* "+activeCoupon+
+   "%0A*DISKON:* -"+money(discount);
  }
 
  message+=
-  "%0A*TOTAL: "+money(total)+"*"+
+  "%0A*SUBTOTAL:* "+money(subtotal)+
+  "%0A*TOTAL:* "+money(total)+
   "%0A%0A"+
   "*ORDER ID:* "+orderId+
   "%0A*Nama:* "+encodeURIComponent(customerName)+
@@ -1459,6 +1448,7 @@ function checkout(){
   "%0A*Alamat:* "+encodeURIComponent(customerAddress);
 
  if(customerNote){
+
   message+=
    "%0A*Catatan:* "+
    encodeURIComponent(customerNote);
@@ -1468,17 +1458,19 @@ function checkout(){
   "%0A%0AMohon konfirmasi pesanan saya.";
 
  saveOrder({
+
   id:orderId,
   name:customerName,
   phone:customerPhone,
   address:customerAddress,
   note:customerNote,
-  subtotal:getCartSubtotal(),
-  discount:getCartDiscount(),
+  subtotal:subtotal,
+  discount:discount,
   coupon:activeCoupon,
   total:total,
   status:"Menunggu konfirmasi",
   createdAt:new Date().toISOString()
+
  });
 
  showLatestOrder();
@@ -1489,7 +1481,6 @@ function checkout(){
   "?text="+message;
 
  window.open(url,"_blank");
-
 }
 
 function goProducts(){
@@ -1506,267 +1497,6 @@ render();
 loadCustomer();
 showLatestOrder();
 
-
-/* ===== KIVI UPGRADE #4 LOGIC ===== */
-
-let couponDiscount = 0;
-let couponApplied = false;
-
-function applyCoupon(){
- const input = document.getElementById("coupon");
- const status = document.getElementById("couponStatus");
- const code = (input.value || "").trim().toUpperCase();
-
- if(code === "KIVI10"){
-  couponDiscount = 0.10;
-  couponApplied = true;
-  status.textContent = "✅ Kupon KIVI10 aktif — diskon 10%";
-  status.style.color = "#43836f";
- }else{
-  couponDiscount = 0;
-  couponApplied = false;
-  status.textContent = "❌ Kode kupon tidak valid.";
-  status.style.color = "#b05a5a";
- }
-
- renderCart();
-}
-
-function getCustomer(){
- return {
-  name:(document.getElementById("customerName")?.value || "").trim(),
-  phone:(document.getElementById("customerPhone")?.value || "").trim(),
-  address:(document.getElementById("customerAddress")?.value || "").trim()
- };
-}
-
-function orderId(){
- const d = new Date();
- const part = d.getTime().toString().slice(-8);
- const rand = Math.floor(100+Math.random()*900);
- return "KIVI-" + part + "-" + rand;
-}
-
-function saveOrder(order){
- const history = JSON.parse(
-  localStorage.getItem("kivi_orders") || "[]"
- );
-
- history.unshift(order);
-
- localStorage.setItem(
-  "kivi_orders",
-  JSON.stringify(history.slice(0,10))
- );
-
- renderHistory();
-}
-
-function renderHistory(){
- const box = document.getElementById("orderHistory");
- if(!box)return;
-
- const history = JSON.parse(
-  localStorage.getItem("kivi_orders") || "[]"
- );
-
- if(!history.length){
-  box.innerHTML='<small style="color:#71827c">Belum ada pesanan.</small>';
-  return;
- }
-
- box.innerHTML=history.map(o=>`
-  <div class="history-item">
-   <div class="order-id">${o.id}</div>
-   <b>${o.name}</b><br>
-   <small>${o.date}</small><br>
-   <small>Total: ${money(o.total)}</small>
-  </div>
- `).join("");
-}
-
-/* Ganti fungsi renderCart dengan versi yang mendukung diskon */
-const originalRenderCart = renderCart;
-
-renderCart = function(){
-
- const box = document.getElementById("cartItems");
-
- if(!cart.length){
-  box.innerHTML=
-   '<div class="empty">🛒 Keranjang masih kosong.</div>';
-
-  document.getElementById("total").textContent="Rp0";
-  return;
- }
-
- let subtotal=0;
-
- box.innerHTML=cart.map(x=>{
-
-  const value=x.price*x.qty;
-  subtotal+=value;
-
-  return `
-   <div class="item">
-
-    <div class="item-info">
-     <b>${x.name}</b><br>
-     <small>${money(x.price)}</small>
-    </div>
-
-    <div class="qty">
-     <button class="soft"
-      onclick="changeQty(${x.id},-1)">−</button>
-
-     <b>${x.qty}</b>
-
-     <button class="soft"
-      onclick="changeQty(${x.id},1)">+</button>
-    </div>
-
-   </div>
-  `;
-
- }).join("");
-
- const discount = couponApplied
-  ? Math.round(subtotal * couponDiscount)
-  : 0;
-
- const total = subtotal - discount;
-
- document.getElementById("total").textContent =
-  money(total);
-
- if(couponApplied){
-  const old = document.getElementById("couponStatus");
-  if(old){
-   old.textContent =
-    "✅ Diskon 10%: -" + money(discount);
-   old.style.color="#43836f";
-  }
- }
-};
-
-/* Checkout baru */
-const originalCheckout = checkout;
-
-checkout = function(){
-
- if(!cart.length){
-  alert("Keranjang masih kosong.");
-  return;
- }
-
- if(WA_NUMBER.includes("XXXXXXXX")){
-  alert(
-   "Nomor WhatsApp toko belum dikonfigurasi.\\n\\n"+
-   "Edit WA_NUMBER pada source KIVI STORE."
-  );
-  return;
- }
-
- const customer = getCustomer();
-
- if(!customer.name){
-  alert("Masukkan nama lengkap terlebih dahulu.");
-  document.getElementById("customerName").focus();
-  return;
- }
-
- if(!customer.phone){
-  alert("Masukkan nomor WhatsApp terlebih dahulu.");
-  document.getElementById("customerPhone").focus();
-  return;
- }
-
- if(!customer.address){
-  alert("Masukkan alamat pengiriman terlebih dahulu.");
-  document.getElementById("customerAddress").focus();
-  return;
- }
-
- let subtotal=0;
- let lines=[];
-
- cart.forEach(x=>{
-  const value=x.price*x.qty;
-  subtotal+=value;
-
-  lines.push(
-   "• "+x.name+
-   " x"+x.qty+
-   " = "+money(value)
-  );
- });
-
- const discount=couponApplied
-  ? Math.round(subtotal*couponDiscount)
-  : 0;
-
- const total=subtotal-discount;
- const id=orderId();
-
- const now=new Date();
- const date=now.toLocaleString("id-ID");
-
- const order={
-  id,
-  name:customer.name,
-  phone:customer.phone,
-  address:customer.address,
-  total,
-  date
- };
-
- saveOrder(order);
-
- let message =
-  "🥝 *PESANAN KIVI STORE*%0A%0A"+
-  "*Order ID:* "+id+
-  "%0A"+
-  "*Nama:* "+encodeURIComponent(customer.name)+
-  "%0A"+
-  "*WhatsApp:* "+encodeURIComponent(customer.phone)+
-  "%0A"+
-  "*Alamat:* "+encodeURIComponent(customer.address)+
-  "%0A%0A";
-
- message +=
-  lines.join("%0A")+
-  "%0A%0A";
-
- if(discount>0){
-  message +=
-   "*Diskon:* -"+money(discount)+
-   "%0A";
- }
-
- message +=
-  "*TOTAL:* "+money(total)+
-  "%0A%0A"+
-  "Mohon konfirmasi pesanan saya.";
-
- const url =
-  "https://wa.me/"+
-  WA_NUMBER+
-  "?text="+message;
-
- window.open(url,"_blank");
-};
-
-const originalOpenCart = openCart;
-
-openCart = function(){
- document.getElementById("cartPanel")
-  .classList.add("show");
-
- renderCart();
- renderHistory();
-};
-
-renderHistory();
 
 </script>
 
