@@ -730,14 +730,6 @@ body.kivi-dark-mode main>p{
       placeholder="Alamat pengiriman"></textarea>
    </div>
 
-   <div class="coupon-row">
-    <input id="coupon" placeholder="Kode kupon">
-    <button class="soft" onclick="applyCoupon()">Gunakan</button>
-   </div>
-
-   <small id="couponStatus" style="display:block;margin-top:8px;color:#71827c">
-    Kupon tersedia: KIVI10
-   </small>
   </div>
 
   <button class="dark" style="width:100%;margin-top:14px" onclick="checkout()">
@@ -1359,18 +1351,6 @@ function renderCart(){
  }
 
 }
-
-function upgrade6CheckoutData(){
-
- return {
-  subtotal:getCartSubtotal(),
-  discount:getCartDiscount(),
-  total:getCartGrandTotal(),
-  coupon:activeCoupon
- };
-
-}
-
 
 function checkout(){
 
